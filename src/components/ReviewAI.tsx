@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { Brain, Save, Terminal } from 'lucide-react';
 import { AI_PROMPTS } from '../constants';
+import type { Session } from '../types';
 
-const ReviewAI = ({ session, onFinish }) => {
+type ReviewAIProps = {
+  session: Session;
+  onFinish: (session: Session) => void;
+};
+
+const ReviewAI: React.FC<ReviewAIProps> = ({ session, onFinish }) => {
   const [reviewText, setReviewText] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAskAI = async (prompt) => {
+  const handleAskAI = (prompt: string) => {
     setIsLoading(true);
     setAiResponse('Connecting to Neural Net...\nAnalyzing data packets...');
     setTimeout(() => {
-      const mockResponse = `> SYSTEM RESPONSE:\n\n针对 "${session.specific}" 的分析报告：\n\n[SUCCESS] 核心概念已捕获。\n[INFO] 建议进一步研究该实现的边界情况。\n\n> END OF LINE.`;
+      const mockResponse = `> SYSTEM RESPONSE:\n\n针对 "${session.specific ?? '当前任务'}" 的分析报告：\n\n[INPUT] ${prompt}\n[SUCCESS] 核心概念已捕获。\n[INFO] 建议进一步研究该实现的边界情况。\n\n> END OF LINE.`;
       setAiResponse(mockResponse);
       setIsLoading(false);
     }, 1500);

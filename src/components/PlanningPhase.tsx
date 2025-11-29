@@ -1,76 +1,80 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Send, Plus, Trash2, Play, Sparkles } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Play, Plus, Send, Sparkles, Trash2 } from 'lucide-react';
+import type { Session, Todo } from '../types';
 
-const PlanningPhase = ({ session, onUpdate, onStart }) => {
+type PlanningPhaseProps = {
+  session: Session;
+  onUpdate: (data: Partial<Session>) => void;
+  onStart: () => void;
+};
+
+const PlanningPhase: React.FC<PlanningPhaseProps> = ({ session, onUpdate, onStart }) => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const { messages, todos } = session;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(scrollToBottom, [messages, isTyping]);
 
-  const generateTodos = (text) => {
-    const newTodos = [];
+  const generateTodos = (text: string): Todo[] => {
+    const newTodos: Todo[] = [];
     // Mock Logic
     if (text.toLowerCase().includes('react')) {
-        newTodos.push({ id: Date.now() + 1, text: 'Read React Docs: ' + text, completed: false });
-        newTodos.push({ id: Date.now() + 2, text: 'Build Demo: ' + text, completed: false });
+      newTodos.push({ id: `${Date.now()}-1`, text: `Read React Docs: ${text}`, completed: false });
+      newTodos.push({ id: `${Date.now()}-2`, text: `Build Demo: ${text}`, completed: false });
     } else {
-        newTodos.push({ id: Date.now() + 1, text: 'Research ' + text, completed: false });
-        newTodos.push({ id: Date.now() + 2, text: 'Practice ' + text, completed: false });
-        newTodos.push({ id: Date.now() + 3, text: 'Summarize Findings', completed: false });
+      newTodos.push({ id: `${Date.now()}-1`, text: `Research ${text}`, completed: false });
+      newTodos.push({ id: `${Date.now()}-2`, text: `Practice ${text}`, completed: false });
+      newTodos.push({ id: `${Date.now()}-3`, text: 'Summarize Findings', completed: false });
     }
     return newTodos;
   };
 
   const handleSend = () => {
     if (!input.trim()) return;
-    
+
     const userContent = input;
-    const newMessages = [...messages, { role: 'user', content: userContent }];
-    
-    // Update messages immediately
-    // Also update title if it's the default one
-    const updates = { messages: newMessages };
+    const newMessages = [...messages, { role: 'user' as const, content: userContent }];
+
+    const updates: Partial<Session> = { messages: newMessages };
     if (session.title === 'New Session') {
-        updates.title = userContent.slice(0, 20) + (userContent.length > 20 ? '...' : '');
+      updates.title = `${userContent.slice(0, 20)}${userContent.length > 20 ? '...' : ''}`;
     }
     onUpdate(updates);
-    
+
     setInput('');
     setIsTyping(true);
 
     setTimeout(() => {
       const generated = generateTodos(userContent);
-      // Merge mock todos
       const updatedTodos = [...todos, ...generated];
-      const aiMsg = { 
-        role: 'ai', 
-        content: `I've added ${generated.length} tasks for "${userContent}". Check the plan!` 
+      const aiMsg = {
+        role: 'ai' as const,
+        content: `I've added ${generated.length} tasks for "${userContent}". Check the plan!`,
       };
-      
+
       onUpdate({
-          messages: [...newMessages, aiMsg],
-          todos: updatedTodos
+        messages: [...newMessages, aiMsg],
+        todos: updatedTodos,
       });
       setIsTyping(false);
     }, 1000);
   };
 
   const addTodo = () => {
-    const text = prompt("New task:");
+    const text = prompt('New task:');
     if (text) {
-      onUpdate({ todos: [...todos, { id: Date.now(), text, completed: false }] });
+      onUpdate({ todos: [...todos, { id: Date.now().toString(), text, completed: false }] });
     }
   };
 
-  const removeTodo = (id) => {
-    onUpdate({ todos: todos.filter(t => t.id !== id) });
+  const removeTodo = (id: string) => {
+    onUpdate({ todos: todos.filter((t) => t.id !== id) });
   };
 
   return (

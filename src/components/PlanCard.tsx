@@ -1,18 +1,43 @@
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
 
-const PlanCard = ({ onStart }) => {
-  const [form, setForm] = useState({
-    specific: '', measurable: '', timeBound: 25, action: ''
+type PlanForm = {
+  specific: string;
+  measurable: string;
+  timeBound: number;
+  action: string;
+};
+
+type PlanDraft = PlanForm & {
+  id: string;
+  review: string;
+  aiInsights: string;
+  status: string;
+  startTime: number;
+};
+
+type PlanCardProps = {
+  onStart: (plan: PlanDraft) => void;
+};
+
+const PlanCard: React.FC<PlanCardProps> = ({ onStart }) => {
+  const [form, setForm] = useState<PlanForm>({
+    specific: '',
+    measurable: '',
+    timeBound: 25,
+    action: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.specific || !form.action) return;
     onStart({
       id: Date.now().toString(),
       ...form,
-      review: '', aiInsights: '', status: 'focusing', startTime: Date.now()
+      review: '',
+      aiInsights: '',
+      status: 'focusing',
+      startTime: Date.now(),
     });
   };
 
@@ -55,8 +80,13 @@ const PlanCard = ({ onStart }) => {
             <input 
               type="number"
               className="pixel-input"
-              value={form.timeBound}
-              onChange={e => setForm({...form, timeBound: parseInt(e.target.value) || 0})}
+            value={form.timeBound}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                timeBound: parseInt(e.target.value, 10) || 0,
+              })
+            }
             />
           </div>
         </div>

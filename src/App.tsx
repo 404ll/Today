@@ -1,50 +1,46 @@
 import React, { useMemo, useState } from 'react';
-import PlanningPhase from './components/PlanningPhase';
+import { Layout, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import ExecutionPhase from './components/ExecutionPhase';
-import { BookOpen, Plus, MessageSquare, Layout, Trash2 } from 'lucide-react';
+import PlanningPhase from './components/PlanningPhase';
+import type { Session } from './types';
 
-const createSession = () => ({
+const createSession = (): Session => ({
   id: Date.now().toString(),
   title: 'New Session',
   status: 'planning',
   messages: [{ role: 'ai', content: 'Hi! What would you like to learn today?' }],
   todos: [],
-  createdAt: Date.now()
+  createdAt: Date.now(),
 });
 
 function App() {
   const initialSession = useMemo(() => createSession(), []);
-  const [sessions, setSessions] = useState([initialSession]);
-  const [activeId, setActiveId] = useState(initialSession.id);
-  const [isSidebarOpen, setSidebarOpen] = useState(true); // 为了方便移动端显示，暂时隐藏
+  const [sessions, setSessions] = useState<Session[]>([initialSession]);
+  const [activeId, setActiveId] = useState<string | null>(initialSession.id);
+  const [isSidebarOpen] = useState(true); // 为了方便移动端显示，暂时隐藏
 
   const createNewSession = () => {
-      const newSession = createSession();
-      setSessions(prev => [newSession, ...prev]);
-      setActiveId(newSession.id);
+    const newSession = createSession();
+    setSessions((prev) => [newSession, ...prev]);
+    setActiveId(newSession.id);
   };
 
-  const updateSession = (id, data) => {
-      setSessions(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
+  const updateSession = (id: string, data: Partial<Session>) => {
+    setSessions((prev) => prev.map((s) => (s.id === id ? { ...s, ...data } : s)));
   };
 
-  const deleteSession = (e, id) => {
-      e.stopPropagation();
-      if (!confirm('Are you sure you want to delete this session?')) return;
-      
-      const newSessions = sessions.filter(s => s.id !== id);
-      setSessions(newSessions);
-      if (activeId === id) {
-          setActiveId(newSessions.length > 0 ? newSessions[0].id : null);
-      }
-      if (newSessions.length === 0) {
-          // Optional: auto-create new if empty
-          // createNewSession(); // Be careful with infinite loops or state updates in render
-          // Instead, just leave it empty or show empty state
-      }
+  const deleteSession = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this session?')) return;
+
+    const newSessions = sessions.filter((s) => s.id !== id);
+    setSessions(newSessions);
+    if (activeId === id) {
+      setActiveId(newSessions.length > 0 ? newSessions[0].id : null);
+    }
   };
 
-  const activeSession = sessions.find(s => s.id === activeId);
+  const activeSession = sessions.find((s) => s.id === activeId);
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans overflow-hidden">
@@ -73,7 +69,7 @@ function App() {
             {sessions.length === 0 && (
                 <div className="text-sm text-gray-400 px-2 italic">No sessions.</div>
             )}
-            {sessions.map(session => (
+            {sessions.map((session) => (
                 <div 
                     key={session.id}
                     onClick={() => setActiveId(session.id)}

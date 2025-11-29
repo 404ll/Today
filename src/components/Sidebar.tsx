@@ -1,4 +1,16 @@
-const Sidebar = ({ sessions, activeId, setActiveId, deleteSession, createNewSession }) => {
+import React from 'react';
+import { MessageSquare, Plus, Trash2 } from 'lucide-react';
+import type { Session } from '../types';
+
+type SidebarProps = {
+  sessions: Session[];
+  activeId: string | null;
+  setActiveId: (id: string) => void;
+  deleteSession: (event: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  createNewSession: () => void;
+};
+
+const Sidebar: React.FC<SidebarProps> = ({ sessions, activeId, setActiveId, deleteSession, createNewSession }) => {
   return (
     <div
       className={`w-64 bg-white border-r border-gray-200 flex flex-col transition-all`}

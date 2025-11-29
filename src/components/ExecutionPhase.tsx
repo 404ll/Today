@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Circle, FileText, ChevronDown, ChevronUp, CheckCircle, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle, CheckCircle2, ChevronDown, ChevronUp, Circle, FileText } from 'lucide-react';
+import type { Session, Todo } from '../types';
 
-const ExecutionPhase = ({ session, onUpdate, onComplete }) => {
-  const [expandedId, setExpandedId] = useState(null);
+type ExecutionPhaseProps = {
+  session: Session;
+  onUpdate: (data: Partial<Session>) => void;
+  onComplete: () => void;
+};
+
+const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onComplete }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const { todos } = session;
 
-  const toggleTodo = (id) => {
-    const newTodos = todos.map(t => 
-      t.id === id ? { ...t, completed: !t.completed } : t
-    );
+  const toggleTodo = (id: string) => {
+    const newTodos = todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
     onUpdate({ todos: newTodos });
-    
-    const newTodo = newTodos.find(t => t.id === id);
-    if (newTodo.completed) {
-        setExpandedId(id);
+
+    const newTodo = newTodos.find((t) => t.id === id);
+    if (newTodo?.completed) {
+      setExpandedId(id);
     }
   };
 
-  const updateSummary = (id, summary) => {
-    const newTodos = todos.map(t => 
-      t.id === id ? { ...t, summary } : t
-    );
+  const updateSummary = (id: string, summary: Todo['summary']) => {
+    const newTodos = todos.map((t) => (t.id === id ? { ...t, summary } : t));
     onUpdate({ todos: newTodos });
   };
 
-  const allCompleted = todos.every(t => t.completed);
-  const progress = todos.length > 0 ? Math.round((todos.filter(t => t.completed).length / todos.length) * 100) : 0;
+  const allCompleted = todos.every((t) => t.completed);
+  const progress = todos.length > 0 ? Math.round((todos.filter((t) => t.completed).length / todos.length) * 100) : 0;
 
   return (
     <div className="max-w-2xl mx-auto pb-20">

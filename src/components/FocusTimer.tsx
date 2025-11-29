@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { CheckSquare } from 'lucide-react';
+import type { Session } from '../types';
 
-const FocusTimer = ({ session, onComplete }) => {
-  const [timeLeft, setTimeLeft] = useState(session.timeBound * 60);
+type FocusTimerProps = {
+  session: Session;
+  onComplete: () => void;
+};
+
+const FocusTimer: React.FC<FocusTimerProps> = ({ session, onComplete }) => {
+  const [timeLeft, setTimeLeft] = useState(() => (session.timeBound ?? 25) * 60);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -21,8 +27,10 @@ const FocusTimer = ({ session, onComplete }) => {
     <div className="flex flex-col items-center justify-center h-[70vh]">
       <div className="pixel-card p-6 mb-8 text-center max-w-2xl w-full border-4">
         <div className="text-xs font-bold bg-black text-white inline-block px-2 py-1 mb-4">CURRENT_TASK</div>
-        <h2 className="text-2xl font-bold mb-2">{session.specific}</h2>
-        <p className="text-gray-600 border-t-2 border-dashed border-gray-400 pt-2 mt-2">&gt;&gt; {session.action}</p>
+        <h2 className="text-2xl font-bold mb-2">{session.specific || 'Current Mission'}</h2>
+        <p className="text-gray-600 border-t-2 border-dashed border-gray-400 pt-2 mt-2">
+          &gt;&gt; {session.action || 'Stay focused and keep shipping'}
+        </p>
       </div>
 
       <div className={`text-9xl font-bold mb-12 tracking-tighter tabular-nums ${timeLeft === 0 ? 'text-red-600 animate-pulse' : 'text-black'}`}>

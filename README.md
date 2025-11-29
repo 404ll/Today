@@ -1,6 +1,6 @@
 # Today · 学习计划驾驶舱
 
-一个基于 React + Vite 的轻量学习管理工具，帮你把「想学什么」拆成可执行的计划，并在同一个界面里完成规划、执行与复盘。
+一个基于 React + Vite + TypeScript 的轻量学习管理工具，帮你把「想学什么」拆成可执行的计划，并在同一个界面里完成规划、执行与复盘。
 
 ## 功能特性
 - 多会话侧边栏：快速切换不同学习主题，支持增删与状态指示。
@@ -16,8 +16,9 @@
 
 ## 技术栈
 - React 19 / React DOM
+- TypeScript（严格模式配置，Session/Todo 结构统一）
 - Vite 7 快速开发与构建
-- Tailwind CSS + 自定义像素风组件
+- Tailwind CSS
 - Lucide Icons 图标库
 
 ## 快速开始
@@ -40,14 +41,15 @@ npm run preview
 ## 目录速览
 ```
 src/
-├── App.jsx              # 主框架：左侧会话列表 + 右侧阶段容器
-├── main.jsx             # React 入口
+├── App.tsx              # 主框架：左侧会话列表 + 右侧阶段容器
+├── main.tsx             # React 入口
 ├── index.css            # Tailwind 及像素风样式
-├── constants.js         # 统一的 AI 提示语集合
+├── constants.ts         # 统一的 AI 提示语集合
+├── types/               # Session/Todo/Message 等 TS 类型
 └── components/
-    ├── PlanningPhase.jsx   # 规划阶段：对话区 + 任务面板
-    ├── ExecutionPhase.jsx  # 执行阶段：任务卡片与总结区
-    └── PlanCard.jsx        # 🎮 复古风格的 SMART 计划表单
+    ├── PlanningPhase.tsx   # 规划阶段：对话区 + 任务面板
+    ├── ExecutionPhase.tsx  # 执行阶段：任务卡片与总结区
+    └── PlanCard.tsx        # 🎮 复古风格的 SMART 计划表单
 ```
 
 ## 使用流程
