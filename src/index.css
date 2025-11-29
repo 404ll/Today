@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    /* 背景色 + 像素点阵背景图 */
+    @apply bg-[#E0E0E0] text-black font-['Space_Mono'];
+    background-image: radial-gradient(#000 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
+
+@layer components {
+  /* 像素卡片：白底黑边硬阴影 */
+  .pixel-card {
+    @apply bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
+  }
+  
+  /* 像素按钮：点击有下沉效果 */
+  .pixel-btn {
+    @apply border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
+           active:shadow-none active:translate-x-[4px] active:translate-y-[4px] 
+           transition-all duration-75 uppercase tracking-wide font-bold cursor-pointer;
+  }
+
+  /* 输入框 */
+  .pixel-input {
+    @apply w-full bg-white border-2 border-black p-3 focus:outline-none focus:ring-0 focus:bg-gray-50 placeholder-gray-400 font-mono;
+  }
+}
