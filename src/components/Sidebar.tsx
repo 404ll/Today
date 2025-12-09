@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronsLeft, Menu, MessageSquare, Moon, Plus, Sun, Trash2 } from 'lucide-react';
+import { MessageSquare, Moon, Plus, Sun, Trash2 } from 'lucide-react';
 import { useSideBarIsOpen } from '../context/SideBarContext';
 import type { Session } from '../types';
 import { useTheme } from '../context/ThemeContext';
@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* 会话列表 - 布局用 Tailwind，颜色用 CSS 类 */}
+      {/* 会话列表 */}
       <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
         <div className="text-xs font-bold sidebar-text uppercase tracking-wider px-2 py-2">
           Your Plans
@@ -128,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </div>
 
-      {/* 底部版本信息 - 布局用 Tailwind，颜色用 CSS 变量 */}
+      {/* 底部版本信息*/}
       <div
         className="p-4 border-t text-xs"
         style={{
