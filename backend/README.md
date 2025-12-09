@@ -1,6 +1,3 @@
-后端 README 内容如下，可直接创建 `backend/README.md`：
-
-```markdown
 # Today Backend API
 
 基于 Express + Prisma + PostgreSQL 的 RESTful API 服务，为前端应用提供会话、待办和消息的数据管理。
@@ -9,10 +6,16 @@
 
 - **Express** - Node.js Web 框架
 - **Prisma** - 类型安全的 ORM（对象关系映射）
-- **PostgreSQL** - 关系型数据库
+- **PostgreSQL** - 关系型数据库（通过 Docker 运行）
 - **TypeScript** - 类型安全的 JavaScript
+- **Docker** - 容器化数据库（推荐，无需本地安装 PostgreSQL）
 
 ## 🚀 快速开始
+
+### 前置要求
+
+- Node.js ≥ 18
+- Docker Desktop（用于运行数据库）
 
 ### 1. 安装依赖
 
@@ -37,22 +40,46 @@ npm install -D typescript @types/express @types/node @types/cors ts-node nodemon
 # nodemon - 开发时自动重启服务器（监听文件变化）
 ```
 
-### 2. 配置数据库
+### 2. 启动数据库（Docker）
 
-创建 `.env` 文件：
+使用 Docker Compose 一键启动 PostgreSQL：
+
+```bash
+# 启动数据库容器（首次会自动下载镜像）
+docker-compose up -d
+
+# 查看数据库日志
+docker-compose logs -f
+
+# 停止数据库
+docker-compose down
+
+# 停止并删除数据（清理所有数据）
+docker-compose down -v
+```
+
+**说明**：
+- `docker-compose up -d` - 后台启动数据库容器
+- Docker 会自动创建用户、数据库和权限
+- 数据存储在 Docker volume 中，删除容器不会丢失数据（除非使用 `-v`）
+- 无需在本地安装 PostgreSQL
+
+### 3. 配置环境变量
+
+创建 `.env` 文件（参考 `env.example`）：
 
 ```env
-DATABASE_URL="postgresql://用户名:密码@localhost:5432/today_db?schema=public"
+DATABASE_URL="postgresql://elemen:123456@localhost:5432/today_db?schema=public"
 PORT=3000
 NODE_ENV=development
 ```
 
 **说明**：
-- `DATABASE_URL` - PostgreSQL 连接字符串，格式：`postgresql://用户:密码@主机:端口/数据库名`
-- 确保 PostgreSQL 已安装并运行
-- 数据库 `today_db` 需要先创建（可通过 `createdb today_db` 或 pgAdmin）
+- `DATABASE_URL` - PostgreSQL 连接字符串，Docker 映射到 `localhost:5432`
+- 用户名、密码、数据库名已在 `docker-compose.yml` 中配置
+- `.env` 文件不要提交到 Git
 
-### 3. 初始化数据库
+### 4. 初始化数据库
 
 ```bash
 # 运行数据库迁移（创建表结构）
@@ -66,7 +93,7 @@ npm run prisma:generate
 - `prisma:migrate` - 根据 `prisma/schema.prisma` 创建数据库表
 - `prisma:generate` - 生成 TypeScript 类型，让代码有自动补全和类型检查
 
-### 4. 启动开发服务器
+### 5. 启动开发服务器
 
 ```bash
 npm run dev
@@ -86,21 +113,40 @@ backend/
 │       └── sessions.ts     # Sessions 路由处理
 ├── prisma/
 │   └── schema.prisma      # 数据库模型定义
+├── docker-compose.yml      # Docker 数据库配置
 ├── .env                   # 环境变量（不提交到 Git）
+├── env.example            # 环境变量模板
 ├── tsconfig.json          # TypeScript 配置
 └── package.json           # 项目依赖和脚本
 ```
 
 ## 🛠️ 可用命令
 
+### 开发命令
+
 | 命令 | 说明 |
 |------|------|
 | `npm run dev` | 启动开发服务器（自动重启） |
 | `npm run build` | 编译 TypeScript 到 `dist/` 目录 |
 | `npm start` | 运行编译后的生产版本 |
+
+### Prisma 命令
+
+| 命令 | 说明 |
+|------|------|
 | `npm run prisma:migrate` | 创建数据库迁移 |
 | `npm run prisma:generate` | 生成 Prisma Client |
 | `npm run prisma:studio` | 打开 Prisma Studio（数据库可视化工具） |
+
+### Docker 命令
+
+| 命令 | 说明 |
+|------|------|
+| `docker-compose up -d` | 启动数据库容器 |
+| `docker-compose down` | 停止数据库容器（保留数据） |
+| `docker-compose down -v` | 停止并删除所有数据 |
+| `docker-compose logs -f` | 查看数据库日志 |
+| `docker ps` | 查看运行中的容器 |
 
 ## 🔌 API 端点
 
@@ -117,6 +163,13 @@ backend/
 - `GET /api/health` - 服务器状态检查
 
 ## 📝 核心概念
+
+### Docker Compose
+
+`docker-compose.yml` 配置了 PostgreSQL 容器：
+- 自动创建用户和数据库
+- 数据持久化在 Docker volume 中
+- 端口映射到本地 `5432`
 
 ### Prisma Schema
 
@@ -155,34 +208,75 @@ const session = await prisma.session.findUnique({
 
 | 变量 | 说明 | 示例 |
 |------|------|------|
-| `DATABASE_URL` | PostgreSQL 连接字符串 | `postgresql://user:pass@localhost:5432/db` |
+| `DATABASE_URL` | PostgreSQL 连接字符串 | `postgresql://elemen:123456@localhost:5432/today_db?schema=public` |
 | `PORT` | 服务器端口 | `3000` |
 | `NODE_ENV` | 运行环境 | `development` / `production` |
 
 ## 🐛 常见问题
 
+**Q: Docker 容器启动失败？**  
+A: 检查 Docker Desktop 是否运行，端口 5432 是否被占用。可以运行 `docker ps` 查看容器状态。
+
 **Q: 数据库连接失败？**  
-A: 检查 `.env` 中的 `DATABASE_URL` 是否正确，确保 PostgreSQL 服务已启动。
+A: 
+1. 确保 Docker 容器正在运行：`docker ps`
+2. 检查 `.env` 中的 `DATABASE_URL` 是否正确
+3. 查看容器日志：`docker-compose logs`
+
+**Q: 如何重置数据库？**  
+A: 
+```bash
+# 停止并删除数据
+docker-compose down -v
+
+# 重新启动
+docker-compose up -d
+
+# 重新运行迁移
+npm run prisma:migrate
+```
 
 **Q: Prisma Client 类型错误？**  
 A: 运行 `npm run prisma:generate` 重新生成类型。
 
-**Q: 修改 Schema 后数据丢失？**  
-A: 迁移会保留数据，但删除字段会丢失该字段的数据。开发环境可以使用 `prisma migrate reset` 重置（会清空数据）。
+**Q: 如何查看数据库数据？**  
+A: 使用 Prisma Studio：`npm run prisma:studio`，或通过 Docker：
+```bash
+docker exec -it today_postgres psql -U elemen -d today_db
+```
+
+**Q: 数据会丢失吗？**  
+A: 
+- `docker-compose down`：数据保留在 Docker volume 中
+- `docker-compose down -v`：会删除所有数据
+- 数据存储在 Docker volume，删除容器不会丢失数据
+
+## 🎯 为什么使用 Docker？
+
+### 优势
+
+1. **无需安装 PostgreSQL** - 不需要在本地安装和配置数据库
+2. **环境隔离** - 不影响本地系统，每个项目独立数据库
+3. **一键启动** - `docker-compose up -d` 即可
+4. **易于清理** - `docker-compose down -v` 完全清理
+5. **跨平台一致** - macOS、Windows、Linux 体验相同
+
+### 对比直接安装
+
+| 特性 | 直接安装 | Docker |
+|------|---------|--------|
+| 安装 | 需要 brew install | 只需 Docker |
+| 启动 | `brew services start` | `docker-compose up` |
+| 清理 | 需要手动卸载 | `docker-compose down -v` |
+| 隔离 | 全局共享 | 项目独立 |
 
 ## 📚 相关文档
 
 - [Express 文档](https://expressjs.com/)
 - [Prisma 文档](https://www.prisma.io/docs)
+- [Docker Compose 文档](https://docs.docker.com/compose/)
 - [PostgreSQL 文档](https://www.postgresql.org/docs/)
 
 ---
 
-**提示**：首次运行前确保 PostgreSQL 已安装并创建了数据库。
-```
-
-要点：
-1. 安装命令有解释：每个依赖的作用
-2. 代码示例精简：只保留关键概念
-3. 结构清晰：分步骤、表格、代码块
-4. 实用信息：常见问题、核心概念说明
+**提示**：首次运行前确保 Docker Desktop 已安装并运行。
