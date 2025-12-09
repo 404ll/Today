@@ -4,30 +4,261 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   CSS 变量系统 - 主题颜色定义
+   ============================================
+   
+   CSS 变量（Custom Properties）是什么？
+   - 使用 --变量名: 值 的方式定义
+   - 使用 var(--变量名) 的方式引用
+   - 可以在 :root 中定义全局变量
+   - 可以在 .dark 中覆盖变量值，实现主题切换
+   
+   优势：
+   1. 集中管理颜色，修改一处即可
+   2. 自动支持主题切换，无需在每个元素写 dark: 前缀
+   3. 语义化命名，代码更易读
+*/
+
 @layer base {
+  /* :root 选择器 - 匹配 <html> 元素，定义全局变量 */
+  :root {
+    /* ========== 背景颜色 ========== */
+    --bg-primary: #ffffff;           /* 主背景色（卡片、侧边栏等） */
+    --bg-secondary: #f9fafb;         /* 次背景色（页面背景）gray-50 */
+    --bg-tertiary: #f3f4f6;         /* 第三背景色（hover 状态）gray-100 */
+    --bg-body: #e0e0e0;             /* body 背景色（像素风格背景） */
+    
+    /* ========== 文字颜色 ========== */
+    --text-primary: #111827;         /* 主文字色（标题、重要文本）gray-900 */
+    --text-secondary: #6b7280;       /* 次文字色（描述、辅助文本）gray-500 */
+    --text-tertiary: #9ca3af;        /* 第三文字色（占位符、禁用文本）gray-400 */
+    
+    /* ========== 边框颜色 ========== */
+    --border-primary: #e5e7eb;       /* 主边框色 gray-200 */
+    --border-secondary: #f3f4f6;     /* 次边框色 gray-100 */
+    
+    /* ========== 侧边栏专用颜色 ========== */
+    --sidebar-bg: #ffffff;           /* 侧边栏背景 */
+    --sidebar-border: #e5e7eb;       /* 侧边栏边框 gray-200 */
+    --sidebar-header-border: #f3f4f6; /* 侧边栏头部边框 gray-100 */
+    
+    /* ========== 激活状态颜色 ========== */
+    --active-bg: #eff6ff;            /* 激活背景色 blue-50 */
+    --active-text: #1d4ed8;          /* 激活文字色 blue-700 */
+    --active-border: #dbeafe;        /* 激活边框色 blue-100 */
+    --active-icon: #3b82f6;          /* 激活图标色 blue-500 */
+    
+    /* ========== 按钮颜色 ========== */
+    --button-primary-bg: #111827;     /* 主按钮背景 gray-900 */
+    --button-primary-hover: #1f2937;  /* 主按钮 hover gray-800 */
+    --button-primary-text: #ffffff;   /* 主按钮文字 */
+    
+    /* ========== 阴影颜色 ========== */
+    --shadow-pixel: rgba(0, 0, 0, 1); /* 像素风格阴影（黑色） */
+    --shadow-pixel-dark: rgba(255, 255, 255, 0.2); /* 暗色模式像素阴影（半透明白） */
+  }
+
+  /* .dark 选择器 - 当 <html> 有 dark class 时生效 */
+  .dark {
+    /* ========== 背景颜色（暗色模式） ========== */
+    --bg-primary: #1f2937;           /* gray-800 */
+    --bg-secondary: #111827;         /* gray-900 */
+    --bg-tertiary: #374151;          /* gray-700 */
+    --bg-body: #1a1a1a;              /* 深色背景 */
+    
+    /* ========== 文字颜色（暗色模式） ========== */
+    --text-primary: #ffffff;          /* 白色 */
+    --text-secondary: #9ca3af;        /* gray-400 */
+    --text-tertiary: #6b7280;         /* gray-500 */
+    
+    /* ========== 边框颜色（暗色模式） ========== */
+    --border-primary: #374151;        /* gray-700 */
+    --border-secondary: #4b5563;      /* gray-600 */
+    
+    /* ========== 侧边栏颜色（暗色模式） ========== */
+    --sidebar-bg: #1f2937;            /* gray-800 */
+    --sidebar-border: #374151;        /* gray-700 */
+    --sidebar-header-border: #374151; /* gray-700 */
+    
+    /* ========== 激活状态颜色（暗色模式） ========== */
+    --active-bg: #1e3a8a;             /* blue-900 */
+    --active-text: #93c5fd;           /* blue-300 */
+    --active-border: #1e40af;         /* blue-700 */
+    --active-icon: #60a5fa;           /* blue-400 */
+    
+    /* ========== 按钮颜色（暗色模式） ========== */
+    --button-primary-bg: #374151;     /* gray-700 */
+    --button-primary-hover: #4b5563;   /* gray-600 */
+    --button-primary-text: #ffffff;    /* 白色 */
+  }
+
+  /* ============================================
+     Body 样式
+     ============================================
+     
+     var() 函数：引用 CSS 变量
+     - var(--变量名) 使用变量值
+     - var(--变量名, 默认值) 如果变量不存在，使用默认值
+  */
   body {
-    /* 背景色 + 像素点阵背景图 */
-    @apply bg-[#E0E0E0] text-black font-['Space_Mono'];
+    /* 使用 Tailwind 的 @apply 指令应用工具类 */
+    @apply font-['Space_Mono'];
+    
+    /* 使用 CSS 变量设置背景和文字颜色 */
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    
+    /* 像素风格背景点阵（亮色模式：黑色点） */
     background-image: radial-gradient(#000 1px, transparent 1px);
     background-size: 20px 20px;
+    
+    /* transition 过渡动画：当颜色变化时平滑过渡 */
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* 暗色模式下的背景点阵（半透明白色点） */
+  html.dark body {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
   }
 }
 
+/* ============================================
+   组件样式 - 使用语义化类名
+   ============================================
+   
+   为什么使用语义化类名？
+   - .sidebar 比 .w-64 bg-white border-r 更易读
+   - 集中管理样式，修改更方便
+   - 自动支持主题切换（通过 CSS 变量）
+*/
+
 @layer components {
-  /* 像素卡片：白底黑边硬阴影 */
-  .pixel-card {
-    @apply bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)];
-  }
-  
-  /* 像素按钮：点击有下沉效果 */
-  .pixel-btn {
-    @apply border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] 
-           active:shadow-none active:translate-x-[4px] active:translate-y-[4px] 
-           transition-all duration-75 uppercase tracking-wide font-bold cursor-pointer;
+  /* ========== 侧边栏样式 ========== */
+  .sidebar {
+    /* 布局相关：使用 Tailwind 工具类 */
+    @apply w-64 flex flex-col transition-colors;
+    
+    /* 颜色相关：使用 CSS 变量（自动支持主题切换） */
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
   }
 
-  /* 输入框 */
+  /* 侧边栏头部 */
+  .sidebar-header {
+    @apply p-4 border-b flex items-center gap-2 h-16;
+    border-color: var(--sidebar-header-border);
+  }
+
+  /* 侧边栏标题 */
+  .sidebar-title {
+    @apply font-bold tracking-tight;
+    color: var(--text-primary);
+  }
+
+  /* 侧边栏文本（如 "Your Plans"） */
+  .sidebar-text {
+    @apply text-xs font-bold uppercase tracking-wider;
+    color: var(--text-secondary);
+  }
+
+  /* 侧边栏按钮（主题切换按钮等） */
+  .sidebar-button {
+    @apply transition-colors;
+    color: var(--text-tertiary);
+  }
+
+  /* :hover 伪类 - 鼠标悬停时的样式 */
+  .sidebar-button:hover {
+    color: var(--text-secondary);
+  }
+
+  /* ========== 侧边栏列表项 ========== */
+  .sidebar-item {
+    @apply flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border border-transparent;
+    color: var(--text-secondary);
+  }
+
+  /* 鼠标悬停效果 */
+  .sidebar-item:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-primary);
+  }
+
+  /* 激活状态（选中的会话） */
+  .sidebar-item-active {
+    background-color: var(--active-bg);
+    color: var(--active-text);
+    border-color: var(--active-border);
+  }
+
+  /* ========== 主按钮样式 ========== */
+  .btn-primary {
+    @apply w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm;
+    background-color: var(--button-primary-bg);
+    color: var(--button-primary-text);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--button-primary-hover);
+  }
+
+  /* ========== 像素风格组件 ========== */
+  
+  /* 像素卡片 */
+  .pixel-card {
+    @apply border-2 transition-colors duration-300;
+    background-color: var(--bg-primary);
+    border-color: var(--text-primary);
+    /* 像素风格阴影 */
+    box-shadow: 4px 4px 0px 0px var(--shadow-pixel);
+  }
+
+  /* 暗色模式下的像素阴影 */
+  .dark .pixel-card {
+    box-shadow: 4px 4px 0px 0px var(--shadow-pixel-dark);
+  }
+  
+  /* 像素按钮 */
+  .pixel-btn {
+    @apply border-2 
+           active:shadow-none active:translate-x-[4px] active:translate-y-[4px] 
+           transition-all duration-75 uppercase tracking-wide font-bold cursor-pointer;
+    border-color: var(--text-primary);
+    box-shadow: 4px 4px 0px 0px var(--shadow-pixel);
+  }
+
+  .dark .pixel-btn {
+    box-shadow: 4px 4px 0px 0px var(--shadow-pixel-dark);
+  }
+
+  /* 像素输入框 */
   .pixel-input {
-    @apply w-full bg-white border-2 border-black p-3 focus:outline-none focus:ring-0 focus:bg-gray-50 placeholder-gray-400 font-mono;
+    @apply w-full p-3 focus:outline-none focus:ring-0 font-mono transition-colors duration-300;
+    background-color: var(--bg-primary);
+    border: 2px solid var(--text-primary);
+    color: var(--text-primary);
+  }
+
+  /* :focus 伪类 - 输入框获得焦点时的样式 */
+  .pixel-input:focus {
+    background-color: var(--bg-tertiary);
+  }
+
+  /* ::placeholder 伪元素 - 占位符文字样式 */
+  .pixel-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  /* ========== 主内容区域 ========== */
+  .main-content {
+    @apply flex-1 flex flex-col h-full overflow-hidden relative transition-colors;
+    background-color: var(--bg-secondary);
+  }
+
+  /* ========== 空状态样式 ========== */
+  .empty-state {
+    @apply h-full flex flex-col items-center justify-center;
+    color: var(--text-tertiary);
   }
 }

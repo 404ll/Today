@@ -36,15 +36,15 @@ const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onCo
         <div className="mb-10">
             <button 
                 onClick={() => onUpdate({ status: 'planning' })} 
-                className="text-xs font-bold text-gray-400 hover:text-gray-600 uppercase tracking-wider mb-4 flex items-center gap-1"
+                className="text-xs font-bold dark:text-gray-400 hover:text-gray-600 uppercase tracking-wider mb-4 flex items-center gap-1 text-black"
             >
                 <ArrowLeft size={12} /> Back to Plan
             </button>
             
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">{session.title || 'Focus Mode'}</h2>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2 dark:text-white">{session.title || 'Focus Mode'}</h2>
                 <div className="flex items-center justify-center gap-4 mt-4">
-                    <div className="h-2 w-48 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-2 w-48 bg-gray-100 rounded-full overflow-hidden dark:bg-gray-700">
                         <div 
                             className={`h-full transition-all duration-500 ease-out ${allCompleted ? 'bg-green-500' : 'bg-blue-600'}`}
                             style={{ width: `${progress}%` }}
@@ -58,7 +58,7 @@ const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onCo
         <div className="space-y-4">
             {todos.map(todo => (
                 <div key={todo.id} 
-                    className={`group rounded-2xl border transition-all duration-300 overflow-hidden
+                    className={`group rounded-2xl border transition-all duration-300 overflow-hidden dark:bg-gray-800 dark:border-gray-700
                     ${todo.completed 
                         ? 'bg-gray-50 border-gray-100' 
                         : 'bg-white border-gray-200 shadow-sm hover:border-blue-300 hover:shadow-md'}`}
@@ -73,7 +73,7 @@ const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onCo
                         
                         <div className="flex-1">
                             <div 
-                                className={`text-base font-medium cursor-pointer transition-colors ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-800'}`}
+                                className={`text-base font-medium cursor-pointer transition-colors dark:text-gray-300 ${todo.completed ? 'text-gray-400 line-through' : 'text-gray-800'}`}
                                 onClick={() => setExpandedId(expandedId === todo.id ? null : todo.id)}
                             >
                                 {todo.text}
@@ -81,7 +81,7 @@ const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onCo
                             
                             {/* Summary Preview */}
                             {expandedId !== todo.id && todo.summary && (
-                                <div className="mt-1 text-sm text-gray-500 flex items-center gap-1">
+                                <div className="mt-1 text-sm text-gray-500 flex items-center gap-1 dark:text-gray-300">
                                     <FileText size={12} />
                                     <span className="truncate max-w-[300px]">{todo.summary}</span>
                                 </div>
@@ -98,12 +98,12 @@ const ExecutionPhase: React.FC<ExecutionPhaseProps> = ({ session, onUpdate, onCo
 
                     {/* Summary Expansion */}
                     {expandedId === todo.id && (
-                        <div className="bg-blue-50/50 px-5 pb-5 pt-2 border-t border-blue-100/50 animate-in slide-in-from-top-1">
+                        <div className="bg-blue-50/50 px-5 pb-5 pt-2 border-t border-blue-100/50 animate-in slide-in-from-top-1 dark:bg-gray-800 dark:border-gray-700">
                             <label className="block text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">
                                 Your Notes
                             </label>
                             <textarea 
-                                className="w-full min-h-[100px] p-3 rounded-xl border border-blue-100 bg-white text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all resize-y"
+                                className="w-full min-h-[100px] p-3 rounded-xl border border-blue-100 bg-white text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all resize-y dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                                 placeholder="What did you learn? Key takeaways..."
                                 value={todo.summary || ''}
                                 onChange={e => updateSummary(todo.id, e.target.value)}

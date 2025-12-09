@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from 'react';
-export const SideBarIsOpenContext = createContext<{ isOpen: boolean; toggleSideBar: () => void }>({ isOpen: false, toggleSideBar: () => {} });
+export const SideBarIsOpenContext = createContext<{ isOpen: boolean; toggleSideBar: () => void }>({ isOpen: true, toggleSideBar: () => {} });
 
 export const SideBarIsOpenProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const toggleSideBar = () => {
     setIsOpen(!isOpen);
   };

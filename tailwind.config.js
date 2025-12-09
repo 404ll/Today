@@ -4,6 +4,7 @@ export default {
       "./index.html",
       "./src/**/*.{js,jsx,ts,tsx}",
     ],
+    darkMode: 'class',//启用暗色模式
     theme: {
       extend: {
         fontFamily: {
