@@ -22,18 +22,31 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { isOpen, toggleSideBar } = useSideBarIsOpen();
   const { theme, toggleTheme } = useTheme();
   
-  // 侧边栏收起状态 - 简单布局用 Tailwind
+  // 侧边栏收起状态
   if (!isOpen) {
     return (
       <div className="w-16 sidebar flex flex-col items-center justify-between py-4">
+        <div className="flex flex-col items-center gap-2">
         <button
           type="button"
           onClick={toggleSideBar}
           className="text-white shadow-sm"
           aria-label="Open sidebar"
         >
-          <img src="/logo.png" alt="Today" className="w-10 h-10 rounded-full" />
+           <h1 className="font-bold sidebar-title">Today</h1>
         </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleTheme();
+          }}
+          className="sidebar-button transition-colors"
+          aria-label="切换主题"
+        >
+          {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
+        </div>
+        <p className='italic px-1 text-xs'>「 Do things with a plan 」</p>{/*英文：做有计划的事；文字竖着斜体*/}
       </div>
     );
   }
@@ -41,11 +54,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   // 侧边栏展开状态
   return (
     <div className="w-64 sidebar flex flex-col transition-all">
-      {/* 头部：Logo + 标题 + 主题切换按钮 */}
-      {/* 布局用 Tailwind，颜色用 CSS 类 */}
       <div className="p-4 sidebar-header border-b flex items-center gap-2 h-16" onClick={toggleSideBar}>
         <img src="/logo.png" alt="Today" className="w-10 h-10 rounded-full" />
-        <h1 className="font-bold sidebar-title tracking-tight">Today</h1>
+        <h1 className="font-bold sidebar-title tracking-tight flex-1">Today</h1>
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -58,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* 新建会话按钮 - 使用 CSS 类处理主题，Tailwind 处理布局 */}
+      {/* 新建会话按钮 */}
       <div className="p-3">
         <button onClick={createNewSession} className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
           <Plus size={16} /> New Session

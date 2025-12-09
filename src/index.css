@@ -203,53 +203,6 @@
     background-color: var(--button-primary-hover);
   }
 
-  /* ========== 像素风格组件 ========== */
-  
-  /* 像素卡片 */
-  .pixel-card {
-    @apply border-2 transition-colors duration-300;
-    background-color: var(--bg-primary);
-    border-color: var(--text-primary);
-    /* 像素风格阴影 */
-    box-shadow: 4px 4px 0px 0px var(--shadow-pixel);
-  }
-
-  /* 暗色模式下的像素阴影 */
-  .dark .pixel-card {
-    box-shadow: 4px 4px 0px 0px var(--shadow-pixel-dark);
-  }
-  
-  /* 像素按钮 */
-  .pixel-btn {
-    @apply border-2 
-           active:shadow-none active:translate-x-[4px] active:translate-y-[4px] 
-           transition-all duration-75 uppercase tracking-wide font-bold cursor-pointer;
-    border-color: var(--text-primary);
-    box-shadow: 4px 4px 0px 0px var(--shadow-pixel);
-  }
-
-  .dark .pixel-btn {
-    box-shadow: 4px 4px 0px 0px var(--shadow-pixel-dark);
-  }
-
-  /* 像素输入框 */
-  .pixel-input {
-    @apply w-full p-3 focus:outline-none focus:ring-0 font-mono transition-colors duration-300;
-    background-color: var(--bg-primary);
-    border: 2px solid var(--text-primary);
-    color: var(--text-primary);
-  }
-
-  /* :focus 伪类 - 输入框获得焦点时的样式 */
-  .pixel-input:focus {
-    background-color: var(--bg-tertiary);
-  }
-
-  /* ::placeholder 伪元素 - 占位符文字样式 */
-  .pixel-input::placeholder {
-    color: var(--text-tertiary);
-  }
-
   /* ========== 主内容区域 ========== */
   .main-content {
     @apply flex-1 flex flex-col h-full overflow-hidden relative transition-colors;
