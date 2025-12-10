@@ -94,7 +94,7 @@ function App() {
     }
   };
 
-  const activeSession = sessions.find((s) => s.id === activeId); //当前选中的会话
+  const activeSession = sessions.find((s) => s.id === activeId) || sessions[0]; 
 
   return (
     <ThemeProvider>
