@@ -1,6 +1,7 @@
 import React from "react";
 import { Sparkles, Send } from "lucide-react";
 import type { Message } from "../types";
+import MessageContent from "./MessageContent";
 
 type ChatCardProps = {
   messages: Message[];
@@ -13,7 +14,7 @@ type ChatCardProps = {
 
 const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef, input, setInput, handleSend }) => {
   return (
-    <div className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="flex flex-col bg-white h-full rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-white dark:bg-blue-900 p-4 border-b border-gray-100 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="bg-indigo-100 text-indigo-600 p-2 rounded-full">
@@ -23,15 +24,15 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef,
           </div>
         </div>
         
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-gray-50/50 dark:bg-gray-900">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-6 bg-gray-50/50 dark:bg-gray-900">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed shadow-sm 
+              <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm 
                 ${msg.role === 'user' 
                     ? 'bg-blue-600 text-white rounded-br-none dark:bg-gray-300 dark:text-black' 
                     : 'bg-white text-gray-700 border border-gray-100 rounded-bl-none dark:bg-gray-800 dark:text-white'}`}
               >
-                {msg.content}
+                <MessageContent content={msg.content} role={msg.role as 'user' | 'ai'} />
               </div>
             </div>
           ))}

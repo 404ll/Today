@@ -49,7 +49,7 @@ const PlanningPhase: React.FC<PlanningPhaseProps> = ({ session, onUpdate }) => {
     //获取AI回复
     const aiMessage = {
       role: "ai" as const,
-      content: response.data?.message,
+      content: response.message,
     };
     onUpdate({ messages: [...newMessages, aiMessage] });
    } catch (error) {

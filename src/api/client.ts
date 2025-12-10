@@ -8,7 +8,7 @@ const api = axios.create({
 //响应拦截器
 api.interceptors.response.use(
     (response) => {
-      return response.data;
+      return response;
     },
     (error) => {
       // 处理错误
