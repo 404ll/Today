@@ -51,11 +51,11 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef,
         <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-100">
           <div className="flex gap-2 items-center bg-gray-50 dark:bg-gray-700 rounded-full px-4 py-2 border border-gray-200 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all">
             <input 
-              className="flex-1 bg-transparent text-sm focus:outline-none text-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-white"
+              className="flex-1 bg-transparent text-sm focus:outline-none text-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder="Type your learning goal..."
+              placeholder="请尽量详细地介绍您的情况以及学习目标..."
             />
             <button 
                 onClick={handleSend} 

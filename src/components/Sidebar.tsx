@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
         </button>
         </div>
-        <p className='italic px-1 text-xs'>「 Do things with a plan 」</p>{/*英文：做有计划的事；文字竖着斜体*/}
+        <p className='italic px-1 text-xs'>「 Do things with a plan 」</p>
       </div>
     );
   }
@@ -118,9 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <button
               onClick={(e) => deleteSession(e, session.id)}
-              className={`p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 ${
-                activeId === session.id ? 'opacity-100' : ''
-              }`}
+              className="p-1.5 rounded-lg  group-hover:opacity-100 transition-all hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500"
             >
               <Trash2 size={14} />
             </button>

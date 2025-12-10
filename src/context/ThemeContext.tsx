@@ -17,12 +17,12 @@ export const ThemeContext = createContext<ThemeContextType>({
 //定义context的提供者
 export const ThemeProvider = (props: Props) => {
   const children = props.children;
-  const [theme, setTheme] = useState<"light" | "dark">("light"); //默认为light
-  //       // 从 localStorage 读取保存的主题，如果没有则默认为 'light'
-  //   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-  //     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-  //     return savedTheme || 'light';
-  //   });
+  
+  // 从 localStorage 读取保存的主题，如果没有则默认为 'light'
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    return savedTheme || "light";
+  });
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
