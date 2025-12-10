@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Layout } from 'lucide-react';
 import ExecutionPhase from './components/ExecutionPhase';
-import PlanningPhase from './components/PlanningPhase';
+import PlanningPhase from './components/MainPanel';
 import Sidebar from './components/Sidebar';
 import { SideBarIsOpenProvider } from './context/SideBarContext';
 import { ThemeProvider } from './context/ThemeContext';

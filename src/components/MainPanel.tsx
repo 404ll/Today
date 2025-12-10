@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { Session } from "../types";
 import ChatCard from "./ChatCard";
+import { chat } from "../api/ai/chat";
 
 type PlanningPhaseProps = {
   session: Session;
@@ -23,12 +24,11 @@ const PlanningPhase: React.FC<PlanningPhaseProps> = ({ session, onUpdate }) => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSend = () => {
+  const handleSend = async() => {
     if (!input.trim()) return;
 
     const userContent = input;
     const newMessages = [
-      ...messages,
       { role: "user" as const, content: userContent },
     ];
 
@@ -43,9 +43,25 @@ const PlanningPhase: React.FC<PlanningPhaseProps> = ({ session, onUpdate }) => {
     setInput("");
     setIsTyping(true);
 
-    setTimeout(() => {
-      setIsTyping(false);
-    }, 1000);
+   try{
+    //调用AI接口
+    const response = await chat(newMessages);
+    //获取AI回复
+    const aiMessage = {
+      role: "ai" as const,
+      content: response.data?.message,
+    };
+    onUpdate({ messages: [...newMessages, aiMessage] });
+   } catch (error) {
+    console.error("AI 调用失败:", error);
+    const errorMessage = {
+      role: "ai" as const,
+      content: error instanceof Error ? error.message : "AI 调用失败",
+    };
+    onUpdate({ messages: [...newMessages, errorMessage] });
+   } finally {
+    setIsTyping(false);
+   }
   };
 
   return (
