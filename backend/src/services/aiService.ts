@@ -42,15 +42,7 @@ export const callQwen = async (messages: Message[]): Promise<string> => {
   try {
     // 转换消息格式，并添加系统提示词
     console.log('格式化消息...');
-    const formattedMessages = [
-      // 系统提示词放在最前面
-      { role: 'system' as const, content: SYSTEM_PROMPT },
-      // 然后转换用户消息
-      ...messages.map(msg => ({
-        role: (msg.role === 'ai' ? 'assistant' : msg.role) as 'user' | 'assistant',
-        content: msg.content,
-      })),
-    ];
+      const formattedMessages = formatMessages(messages);
     console.log('消息已格式化，数量:', formattedMessages.length);
 
     console.log('开始调用 Qwen API，模型:', process.env.QWEN_MODEL || 'qwen-plus');
@@ -94,6 +86,43 @@ export const callQwen = async (messages: Message[]): Promise<string> => {
     throw new Error(error.message || 'AI 调用失败');
   }
 };
+
+/**
+ * 流式调用 Qwen API
+ * 返回异步生成器，每次 yield 一个文本片段
+ */
+export async function* callQwenWithStream(messages: Message[]): AsyncGenerator<string, void, unknown> {
+  const qwen = getQwenClient();
+  const formattedMessages = formatMessages(messages);
+  
+  try {
+
+    const stream = await qwen.chat.completions.create({
+      model: process.env.QWEN_MODEL || 'qwen-plus',
+      messages: formattedMessages,
+      stream: true,
+      stream_options: { include_usage: true }
+    });
+
+    for await (const chunk of stream) {
+      if (chunk.choices && chunk.choices.length > 0) {
+        const content = chunk.choices[0].delta?.content;
+        if (content) {
+          yield content; // 通过yield实时返回每个片段
+        }
+      } else if (chunk.usage) {
+        
+        console.log("\n--- 请求用量 ---");
+        console.log(`输入 Tokens: ${chunk.usage.prompt_tokens}`);
+        console.log(`输出 Tokens: ${chunk.usage.completion_tokens}`);
+        console.log(`总计 Tokens: ${chunk.usage.total_tokens}`);
+      }
+    }
+  } catch (error: any) {
+    console.error("流式请求失败:", error);
+    throw new Error(error.message || 'AI 流式调用失败');
+  }
+}
 
 /**
  * 从 AI 回复中提取待办事项
@@ -226,3 +255,13 @@ export const handleAIChat = async (
   }
 };
 
+
+const formatMessages = (messages: Message[]) => {
+  return [
+    { role: 'system' as const, content: SYSTEM_PROMPT },
+    ...messages.map(msg => ({
+      role: (msg.role === 'ai' ? 'assistant' : msg.role) as 'user' | 'assistant',
+      content: msg.content,
+    })),
+  ];
+};
