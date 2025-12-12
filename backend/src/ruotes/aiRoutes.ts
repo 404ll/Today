@@ -124,6 +124,7 @@ router.post('/chat-stream', async (req, res) => {
       const stream = callQwenWithStream(messages); 
       for await (const chunk of stream) {
         fullResponse += chunk;
+        
         //SSE格式：data: {JSON}\n\n
         res.write(`data: ${JSON.stringify({
           content: chunk, //内容
@@ -190,7 +191,9 @@ router.post('/chat-stream', async (req, res) => {
         error: error.message || 'AI 服务调用失败',
         done: true
       })}\n\n`);
-      res.end();
+
+      res.end();//结束响应
+      console.log("流式响应已发送给前端");
     }
   }
 });

@@ -13,6 +13,10 @@ type ChatCardProps = {
 };
 
 const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef, input, setInput, handleSend }) => {
+  const lastMessage = messages[messages.length - 1];
+  const isLastMessageAI = lastMessage?.role === 'ai';
+  const shouldShowTyping = isTyping && !isLastMessageAI; // 只有最后一条不是 AI 消息时才显示打字动画
+  
   return (
     <div className="flex flex-col bg-white h-full rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-white dark:bg-blue-900 p-4 border-b border-gray-100 flex justify-between items-center">
@@ -36,7 +40,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef,
               </div>
             </div>
           ))}
-          {isTyping && (
+          {shouldShowTyping && (
             <div className="flex justify-start">
               <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-2 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
                 <span className="w-2 h-2 bg-gray-300 rounded-full animate-bounce"></span>
