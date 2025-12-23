@@ -138,7 +138,7 @@ export const extractTodosFromMessage = (message: string): Todo[] => {
 
   lines.forEach((line, index) => {
     // 匹配多种列表格式
-    const match = line.match(/^[\d\-•]\s*[\.、\)]\s*(.+)$/);
+    const match = line.match(/^[\d\-•]\s*[.、)]\s*(.+)$/);
     if (match && match[1].trim().length > 0) {
       todos.push({
         id: `todo-${Date.now()}-${index}`,

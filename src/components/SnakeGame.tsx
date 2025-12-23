@@ -35,7 +35,10 @@ const SnakeGame: React.FC = () => {
   const [isGameOver, setIsGameOver] = useState(false);
   const directionRef = useRef<Direction>("RIGHT");
 
-  directionRef.current = direction;
+  // 使用 useEffect 更新 ref，避免在渲染期间更新
+  useEffect(() => {
+    directionRef.current = direction;
+  }, [direction]);
 
   // 键盘控制
   useEffect(() => {

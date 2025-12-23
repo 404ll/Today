@@ -28,7 +28,7 @@ app.use((req, res) => {
 });
 
 // 错误处理中间件
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('服务器错误:', err);
   res.status(500).json({
     error: 'Internal Server Error',
