@@ -1,84 +1,101 @@
 import { Message } from "../../types";
-import api from "../client";
+import api, { BASE_URL, getToken } from "../client";
 
-//非流式
+// 定义接口返回类型
+interface ChatResponse {
+    reply: string;
+    usage: number;
+}
+
+// 1. 非流式 (Axios)
 export const chat = async (messages: Message[]) => {
-    // 响应拦截器已经返回了 response.data，所以这里直接返回 response
-    const response = await api.post("/chat", { messages }); //Axios写法？
-    return response.data;
+    return api.post<ChatResponse>("/chat", { messages });
 };
 
-// 流式聊天
+// 2. 流式(原生 Fetch + 复用配置)
 export const chatStream = async (
     messages: Message[],
-    onChunk: (chunk: string) => void,
-    onComplete: () => void,
-    onError: (error: Error) => void,
-  ) => {
-    const baseURL = import.meta.env.VITE_API_BASE_URL;
-  
+    onChunk: (chunk: string) => void, // 实时吐字回调
+    onComplete: () => void,           // 完成回调
+    onError: (error: Error) => void,  // 错误回调
+) => {
     try {
-      const response = await fetch(`${baseURL}/chat-stream`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ messages }),
-      });
-      
-      console.log("前端流式响应体 response", response);
-      if (!response.ok) {
-        throw new Error("请求失败");
-      }
-  
-      const reader = response.body?.getReader(); //web原生API获取响应体-流式响应
-      const decoder = new TextDecoder(); //web原生API解码器
-  
-      if (!reader) {
-        throw new Error("无法获取响应体");
-      }
-  
-      let buffer = "";
-      let fullMessage = "";
-  
-      while (true) {
-        const { done, value } = await reader.read();
-  
-        if (done) {
-          onComplete();
-          break;
+        // 🔥 关键修正：复用 BASE_URL 和 Token，防止 401 和 路径错误
+        const response = await fetch(`${BASE_URL}/chat-stream`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${getToken()}`, // 手动补齐 Token
+            },
+            body: JSON.stringify({ messages }),
+        });
+
+        if (!response.ok) {
+            // 尝试读取后端返回的错误信息
+            const errText = await response.text(); 
+            throw new Error(errText || `HTTP Error: ${response.status}`);
         }
-  
-        buffer += decoder.decode(value, { stream: true }); //解码二进制数据为字符串
-  
-        // SSE: 每条消息以 \n\n 分隔
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || ""; //最后一段可能是不完整的
-  
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const data = JSON.parse(line.slice(6));
-  
-            if (data.error) {
-              onError(new Error(data.error));
-              return;
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        
+        if (!reader) throw new Error("无法初始化流读取器");
+
+        let buffer = "";
+
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+                // 流结束时，如果 buffer 里还有剩余数据没处理，需要在这里处理
+                if(buffer.trim()) { 
+                    // 处理剩余 buffer 逻辑... 
+                }
+                onComplete();
+                break;
             }
-  
-            if (data.done) {
-              fullMessage = data.fullMessage || fullMessage;
-              onComplete();
-              return;
+
+            // 解码并追加到缓冲区
+            buffer += decoder.decode(value, { stream: true });
+
+            // 🔥 稍微优化一点的 SSE 解析逻辑
+            // 只有当 buffer 包含换行符时才处理，避免处理半截数据
+            while (buffer.includes("\n")) {
+                const index = buffer.indexOf("\n");
+                const line = buffer.slice(0, index).trim(); // 取出一行
+                buffer = buffer.slice(index + 1); // 剩下的放回 buffer
+
+                if (!line.startsWith("data: ")) continue; // 忽略心跳或非数据行
+
+                try {
+                    const jsonStr = line.slice(6); // 去掉 "data: "
+                    if (jsonStr === "[DONE]") { // OpenAI 标准结束标记
+                        onComplete();
+                        return;
+                    }
+
+                    const data = JSON.parse(jsonStr);
+                    
+                    // 错误处理
+                    if (data.error) {
+                         throw new Error(data.error);
+                    }
+                    
+                    // 业务逻辑：提取内容
+                    // 假设后端格式是 { content: "哈" } 或 OpenAI 格式 { choices: [...] }
+                    const content = data.content || data.choices?.[0]?.delta?.content || "";
+                    if (content) {
+                        onChunk(content);
+                    }
+
+                } catch (e) {
+                    console.warn("JSON解析失败，可能是数据包不完整", line);
+                    // 解析失败不应该打断整个流，通常选择忽略这一行
+                }
             }
-  
-            if (data.content) {
-              fullMessage += data.content;
-              onChunk(data.content);
-            }
-          }
         }
-      }
     } catch (err: any) {
-      onError(err);
+        console.error("Stream Error:", err);
+        onError(err instanceof Error ? err : new Error(String(err)));
     }
-  };
-  
+};

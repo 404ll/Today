@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Layout } from 'lucide-react';
+import { Gamepad2, Layout } from 'lucide-react';
 import ExecutionPhase from './components/ExecutionPhase';
 import MainPanel from './components/MainPanel';
 import Sidebar from './components/Sidebar';
 import { SideBarIsOpenProvider } from './context/SideBarContext';
 import { ThemeProvider } from './context/ThemeContext';
 import type { Session } from './types';
+import SnakeGame from './components/SnakeGame';
 
 const createSession = (): Session => ({
   id: Date.now().toString(),
@@ -95,12 +96,13 @@ function App() {
   };
 
   const activeSession = sessions.find((s) => s.id === activeId) || sessions[0]; 
+  const [showSnake, setShowSnake] = useState(false);
 
   return (
     <ThemeProvider>
       <SideBarIsOpenProvider>
         {/* 布局用 Tailwind，背景色用 CSS 类 */}
-        <div className="flex h-screen font-sans overflow-hidden">
+        <div className="flex h-screen font-sans overflow-hidden relative">
           <Sidebar
             sessions={sessions}
             activeId={activeId}
@@ -139,6 +141,30 @@ function App() {
               </div>
             )}
           </main>
+
+          {/* 右下角小游戏入口 */}
+          <button
+            type="button"
+            onClick={() => setShowSnake(true)}
+            className="hidden md:flex items-center gap-2 fixed right-6 bottom-6 z-40 px-3 py-2 rounded-full bg-emerald-500 text-white text-xs font-medium shadow-lg shadow-emerald-500/40 hover:bg-emerald-600 active:scale-95 transition-transform"
+          >
+            <Gamepad2 size={14} />
+            玩一会儿贪吃蛇
+          </button>
+
+          {showSnake && (
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowSnake(false)}
+            >
+              <div
+                className="w-full h-full"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <SnakeGame />
+              </div>
+            </div>
+          )}
         </div>
       </SideBarIsOpenProvider>
     </ThemeProvider>
