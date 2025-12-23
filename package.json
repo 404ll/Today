@@ -5,9 +5,25 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "prepare": "husky",
+    "commit": "git-cz" 
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{css,html}": [
+      "prettier --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git"
+    }
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -18,19 +34,28 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
+    "@eslint/js": "^9.39.2",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/typography": "^0.5.19",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
-    "eslint": "^9.39.1",
+    "commitizen": "^4.3.1",
+    "cz-git": "^1.12.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
+    "eslint-plugin-react-refresh": "^0.4.26",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "postcss": "^8.5.6",
+    "prettier": "^3.7.4",
     "tailwindcss": "^3.4.17",
+    "typescript-eslint": "^8.50.1",
     "vite": "^7.2.4"
   }
 }
