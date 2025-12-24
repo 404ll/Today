@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Session } from "../types";
 import ChatCard from "./ChatCard";
 import {chatStream } from "../api/ai/chat";
+import TodoListCard from "./TodoListCard";
 
 type MainPanelProps = {
   session: Session;
@@ -101,14 +102,16 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
 
   return (
     <div className="h-[calc(100vh-140px)] md:h-[600px] dark:text-white">
-      <ChatCard
+      {/* <ChatCard
         messages={messages}
         isTyping={isTyping}
         messagesEndRef={messagesEndRef}
         input={input}
         setInput={setInput}
         handleSend={handleSend}
-      />
+      /> */}
+
+      <TodoListCard/>
     </div>
   );
 };

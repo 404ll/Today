@@ -123,7 +123,7 @@ function App() {
                       onUpdate={(data) => updateSession(activeSession.id, data)}
                     />
                   )}
-
+                  
                   {(activeSession.status === 'executing' || activeSession.status === 'completed') && (
                     <ExecutionPhase
                       key={activeSession.id}
