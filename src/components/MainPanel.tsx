@@ -40,8 +40,9 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
   };
 
   useEffect(() => {
-    // 当消息变化时，检查是否应该自动滚动
-    if (checkIfNearBottom()) {
+    if (shouldAutoScrollRef.current) {
+      scrollToBottom();
+    } else if (checkIfNearBottom()) {
       shouldAutoScrollRef.current = true;
       scrollToBottom();
     }
@@ -72,7 +73,7 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
     // 3. 清空输入框，设置加载状态
     setInput("");
     setIsTyping(true);
-  
+    
     // 4. 创建 AI 消息占位符（先显示空消息）
     let aiMessageContent = '';
     const tempAiMessage = {
@@ -116,7 +117,7 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
       setIsTyping(false);
     };
   
-    // 7. 调用流式 API
+    // 8. 调用流式 API
     try {
       await chatStream(newMessages, onChunk, onComplete, onError);
     } catch (error) {
