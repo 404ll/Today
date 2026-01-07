@@ -13,7 +13,7 @@ const TodoListCard: React.FC = () => {
   const updateTodo = useTodoListStore((state) => state.updateTodo);
   const clearCompleted = useTodoListStore((state) => state.clearCompleted);
   const setTodos = useTodoListStore((state) => state.setTodos);
-  const getStats = useTodoListStore((state) => state.getStats);
+
 
 
     const handleRemoveTodo = (id: string) => {

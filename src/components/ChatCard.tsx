@@ -7,12 +7,14 @@ type ChatCardProps = {
   messages: Message[];
   isTyping: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+  onScroll: () => void;
   input: string;
   setInput: (input: string) => void;
   handleSend: () => void;
 };
 
-const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef, input, setInput, handleSend }) => {
+const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef, scrollContainerRef, onScroll, input, setInput, handleSend }) => {
   const lastMessage = messages[messages.length - 1];
   const isLastMessageAI = lastMessage?.role === 'ai';
   const shouldShowTyping = isTyping && !isLastMessageAI; // 只有最后一条不是 AI 消息时才显示打字动画
@@ -28,7 +30,11 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef,
           </div>
         </div>
         
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-6 bg-gray-50/50 dark:bg-gray-900">
+        <div 
+          ref={scrollContainerRef}
+          onScroll={onScroll}
+          className="flex-1 min-h-0 overflow-y-auto p-4 space-y-6 bg-gray-50/50 dark:bg-gray-900"
+        >
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm 

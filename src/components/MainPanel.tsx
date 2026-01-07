@@ -12,16 +12,39 @@ type MainPanelProps = {
 const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);//消息列表底部锚点 用于滚动到底部
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);//消息列表容器 用于检测用户滚动行为
+  const shouldAutoScrollRef = useRef(true); // 用于判断用户是否在底部
 
   const { messages } = session;
 
+  // 检查用户是否在底部附近（距离底部 100px 内）
+  const checkIfNearBottom = () => {
+    if (!scrollContainerRef.current) return false;//如果消息列表容器不存在，则返回false
+    const container = scrollContainerRef.current;//获取消息列表容器
+    const threshold = 100; // 100px 阈值
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;//计算消息列表容器底部到用户滚动位置的距离
+    return distanceFromBottom < threshold;//如果距离小于阈值，则返回true
+  };
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // 只有当用户接近底部时才自动滚动
+    if (shouldAutoScrollRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // 处理滚动事件：检测用户是否在底部
+  const handleScroll = () => {
+    shouldAutoScrollRef.current = checkIfNearBottom();
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // 当消息变化时，检查是否应该自动滚动
+    if (checkIfNearBottom()) {
+      shouldAutoScrollRef.current = true;
+      scrollToBottom();
+    }
   }, [messages, isTyping]);
 
 
@@ -29,6 +52,9 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
     if (!input.trim()) return;
   
     const userContent = input;
+    
+    // 用户发送消息时，强制滚动到底部
+    shouldAutoScrollRef.current = true;
     
     // 1. 准备新消息列表（包含用户消息）
     const newMessages = [
@@ -102,14 +128,16 @@ const MainPanel: React.FC<MainPanelProps> = ({ session, onUpdate }) => {
 
   return (
     <div className="h-[calc(100vh-140px)] md:h-[600px] dark:text-white">
-      {/* <ChatCard
+      <ChatCard
         messages={messages}
         isTyping={isTyping}
         messagesEndRef={messagesEndRef}
+        scrollContainerRef={scrollContainerRef}
+        onScroll={handleScroll}
         input={input}
         setInput={setInput}
         handleSend={handleSend}
-      /> */}
+      />
 
       <TodoListCard/>
     </div>
