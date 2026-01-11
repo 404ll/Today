@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { Play, Plus, Trash2 } from 'lucide-react';
-import useTodoListStore from '../store/TodoListStore';
-import type { Todo } from '../types';
-import TodoItem from './TodoItem';
+import { Play, Plus } from 'lucide-react';
+import useTodoListStore from '../../store/TodoListStore';
+import type { Todo } from '../../types';
+import { TodoItem } from './TodoItem';
 
-const TodoListCard: React.FC = () => {
+export function TodoListCard() {
   //使用选择器订阅需要的状态
   const todos = useTodoListStore((state) => state.todos);
   const addTodo = useTodoListStore((state) => state.addTodo);
@@ -75,7 +74,5 @@ const TodoListCard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default TodoListCard;
+}
 

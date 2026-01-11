@@ -224,6 +224,80 @@ export const generateTodos = async (
 };
 
 /**
+ * 使用 AI 从消息中智能提取待办事项
+ * 当基础提取方法失败时，使用 AI 辅助提取
+ */
+export const extractTodosWithAI = async (
+  message: string,
+  sessionContext?: string
+): Promise<Todo[]> => {
+  const qwen = getQwenClient();
+
+  const contextText = sessionContext
+    ? `\n会话上下文：${sessionContext}\n`
+    : '';
+
+  const prompt = `你是一个待办事项提取助手。请从以下 AI 对话内容中提取出所有待办事项（任务、计划、需要做的事情等）。
+
+${contextText}AI 对话内容：
+"""
+${message}
+"""
+
+请仔细分析上述内容，提取出所有可以作为待办事项的内容。要求：
+1. 提取的内容应该是具体可执行的任务
+2. 每个待办事项应该简洁明了
+3. 如果内容中没有待办事项，返回空数组
+
+请以 JSON 格式返回，格式如下：
+{
+  "todos": [
+    {"text": "待办事项1"},
+    {"text": "待办事项2"},
+    {"text": "待办事项3"}
+  ]
+}
+
+如果没有任何待办事项，返回：
+{
+  "todos": []
+}`;
+
+  try {
+    const response = await qwen.chat.completions.create({
+      model: process.env.QWEN_MODEL || 'qwen-plus',
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      temperature: 0.3, // 降低温度以获得更稳定的结果
+    });
+
+    const aiResponse = response.choices[0]?.message?.content || '';
+    
+    // 尝试从 AI 回复中提取 JSON
+    const jsonTodos = extractTodosFromJSON(aiResponse);
+    if (jsonTodos && jsonTodos.length > 0) {
+      return jsonTodos;
+    }
+
+    // 如果 JSON 提取失败，尝试列表格式提取
+    const listTodos = extractTodosFromMessage(aiResponse);
+    if (listTodos && listTodos.length > 0) {
+      return listTodos;
+    }
+
+    // 如果都失败，返回空数组
+    return [];
+  } catch (error: any) {
+    console.error('AI 提取待办事项失败:', error);
+    throw error;
+  }
+};
+
+/**
  * 处理 AI 聊天请求
  * 这是主要的 AI 服务函数
  */

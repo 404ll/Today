@@ -83,6 +83,84 @@ router.get('/health', async (req, res) => {
   }
 });
 
+/**
+ * 从 AI 消息中提取待办事项
+ * POST /api/extract-todos
+ * Body: { message: string, sessionContext?: string, useAI?: boolean }
+ */
+router.post('/extract-todos', async (req, res) => {
+  try {
+    const { message, sessionContext, useAI = false } = req.body;
+
+    // 验证请求体
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({
+        error: 'ValidationError',
+        message: 'message 必须是字符串',
+      });
+    }
+
+    // 导入提取函数
+    const { extractTodosFromJSON, extractTodosFromMessage, extractTodosWithAI } = await import('../services/aiService');
+
+    // 1. 先尝试基础提取（JSON 和列表格式）
+    const jsonTodos = extractTodosFromJSON(message);
+    if (jsonTodos && jsonTodos.length > 0) {
+      return res.json({
+        todos: jsonTodos,
+        method: 'json',
+      });
+    }
+
+    const listTodos = extractTodosFromMessage(message);
+    if (listTodos && listTodos.length > 0) {
+      return res.json({
+        todos: listTodos,
+        method: 'list',
+      });
+    }
+
+    // 2. 如果基础提取失败且启用 AI，使用 AI 辅助提取
+    if (useAI) {
+      try {
+        const aiTodos = await extractTodosWithAI(message, sessionContext);
+        return res.json({
+          todos: aiTodos,
+          method: 'ai',
+        });
+      } catch (aiError: any) {
+        console.error('AI 提取失败:', aiError);
+        // AI 提取失败时，返回空数组而不是错误
+        return res.json({
+          todos: [],
+          method: 'ai-failed',
+          warning: 'AI 提取失败，已返回空结果',
+        });
+      }
+    }
+
+    // 3. 如果都不成功，返回空数组
+    return res.json({
+      todos: [],
+      method: 'none',
+    });
+  } catch (error: any) {
+    console.error('提取待办事项错误:', error);
+    
+    if (error.message?.includes('API Key')) {
+      return res.status(500).json({
+        error: 'ConfigurationError',
+        message: 'AI 服务配置错误',
+      });
+    }
+
+    res.status(500).json({
+      error: 'InternalServerError',
+      message: error.message || '提取待办事项失败',
+    });
+  }
+});
+
 router.post('/chat-stream', async (req, res) => {
   try {
     const {messages} = req.body;

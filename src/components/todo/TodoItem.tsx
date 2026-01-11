@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import type { KeyboardEvent, FocusEvent } from 'react';
 import { Trash2, Check, X, Pencil } from 'lucide-react';
-import type { Todo } from '../types';
+import type { Todo } from '../../types';
 
 type TodoItemProps = {
   todo: Todo;
@@ -11,14 +12,14 @@ type TodoItemProps = {
   className?: string;
 };
 
-const TodoItem: React.FC<TodoItemProps> = ({
+export function TodoItem({
   todo,
   index,
   onRemove,
   onToggle,
   onUpdate,
   className = '',
-}) => {
+}: TodoItemProps) {
  
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.text);
@@ -59,7 +60,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   };
 
   // 键盘控制
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSave();
@@ -71,7 +72,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   };
 
   // 失焦自动保存
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     const relatedTarget = e.relatedTarget as HTMLElement | null;
 
     if (
@@ -165,6 +166,4 @@ const TodoItem: React.FC<TodoItemProps> = ({
       </div>
     </li>
   );
-};
-
-export default TodoItem;
+}

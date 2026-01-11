@@ -1,26 +1,30 @@
-import React from 'react';
-import { MessageSquare, Moon, Plus, Sun, Trash2 } from 'lucide-react';
-import { useSideBarIsOpen } from '../context/SideBarContext';
-import type { Session } from '../types';
-import { useTheme } from '../context/ThemeContext';
+import type { MouseEvent } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { MessageSquare, Moon, Plus, Sparkles, Sun, Trash2 } from 'lucide-react';
+import { ConnectKitButton } from 'connectkit';
+import { useSideBarIsOpen } from '../../context/SideBarContext';
+import type { Session } from '../../types';
+import { useTheme } from '../../context/ThemeContext';
+import { preloadRoute } from '../../utils/preload';
 
 type SidebarProps = {
   sessions: Session[];
   activeId: string | null;
   setActiveId: (id: string) => void;
-  deleteSession: (event: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  deleteSession: (event: MouseEvent<HTMLButtonElement>, id: string) => void;
   createNewSession: () => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({
+export function Sidebar({
   sessions,
   activeId,
   setActiveId,
   deleteSession,
   createNewSession,
-}) => {
+}: SidebarProps) {
   const { isOpen, toggleSideBar } = useSideBarIsOpen();
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
   
   // 侧边栏收起状态
   if (!isOpen) {
@@ -69,24 +73,55 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* 新建会话按钮 */}
-      <div className="p-3">
-        <button onClick={createNewSession} className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm">
-          <Plus size={16} /> New Session
-        </button>
+      {/* 导航链接 */}
+      <div className="p-3 space-y-2">
+        <Link
+          to="/"
+          onMouseEnter={() => preloadRoute('/')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+            location.pathname === '/'
+              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+          }`}
+        >
+          <MessageSquare size={16} />
+          会话列表
+        </Link>
+        <Link
+          to="/ai-to-todo"
+          onMouseEnter={() => preloadRoute('/ai-to-todo')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+            location.pathname === '/ai-to-todo'
+              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+          }`}
+        >
+          <Sparkles size={16} />
+          AI 转待办
+        </Link>
       </div>
 
-      {/* 会话列表 */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
-        <div className="text-xs font-bold sidebar-text uppercase tracking-wider px-2 py-2">
-          Your Plans
+      {/* 新建会话按钮（仅在首页显示） */}
+      {location.pathname === '/' && (
+        <div className="p-3">
+          <button onClick={createNewSession} className="btn-primary flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-sm w-full">
+            <Plus size={16} /> New Session
+          </button>
         </div>
-        {sessions.length === 0 && (
-          <div className="text-sm px-2 italic" style={{ color: 'var(--text-secondary)' }}>
-            No sessions.
+      )}
+
+      {/* 会话列表（仅在首页显示） */}
+      {location.pathname === '/' && (
+        <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
+          <div className="text-xs font-bold sidebar-text uppercase tracking-wider px-2 py-2">
+            Your Plans
           </div>
-        )}
-        {sessions.map((session) => (
+          {sessions.length === 0 && (
+            <div className="text-sm px-2 italic" style={{ color: 'var(--text-secondary)' }}>
+              No sessions.
+            </div>
+          )}
+          {sessions.map((session) => (
           <div
             key={session.id}
             onClick={() => setActiveId(session.id)}
@@ -124,6 +159,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
         ))}
+        </div>
+      )}
+
+      {/* 钱包连接按钮 */}
+      <div className="p-3 border-t" style={{ borderColor: 'var(--sidebar-header-border)' }}>
+       <ConnectKitButton />
       </div>
 
       {/* 底部版本信息*/}
@@ -138,6 +179,4 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
     </div>
   );
-};
-
-export default Sidebar;
+}

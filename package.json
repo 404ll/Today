@@ -26,12 +26,17 @@
     }
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.16",
     "axios": "^1.13.2",
+    "connectkit": "^1.9.1",
     "lucide-react": "^0.555.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.12.0",
     "remark-gfm": "^4.0.1",
+    "viem": "^2.44.0",
+    "wagmi": "^3.2.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
@@ -44,6 +49,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
     "autoprefixer": "^10.4.22",
+    "buffer": "^6.0.3",
     "commitizen": "^4.3.1",
     "cz-git": "^1.12.0",
     "eslint": "^9.39.2",
@@ -57,6 +63,7 @@
     "prettier": "^3.7.4",
     "tailwindcss": "^3.4.17",
     "typescript-eslint": "^8.50.1",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-node-polyfills": "^0.24.0"
   }
 }

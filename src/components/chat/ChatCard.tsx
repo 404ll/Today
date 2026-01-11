@@ -1,20 +1,20 @@
-import React from "react";
+import type { RefObject } from "react";
 import { Sparkles, Send } from "lucide-react";
-import type { Message } from "../types";
-import MessageContent from "./MessageContent";
+import type { Message } from "../../types";
+import { MessageContent } from "./MessageContent";
 
 type ChatCardProps = {
   messages: Message[];
   isTyping: boolean;
-  messagesEndRef: React.RefObject<HTMLDivElement | null>;
-  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+  messagesEndRef: RefObject<HTMLDivElement | null>;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
   onScroll: () => void;
   input: string;
   setInput: (input: string) => void;
   handleSend: () => void;
 };
 
-const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef, scrollContainerRef, onScroll, input, setInput, handleSend }) => {
+export function ChatCard({ messages, isTyping, messagesEndRef, scrollContainerRef, onScroll, input, setInput, handleSend }: ChatCardProps) {
   const lastMessage = messages[messages.length - 1];
   const isLastMessageAI = lastMessage?.role === 'ai';
   const shouldShowTyping = isTyping && !isLastMessageAI; // 只有最后一条不是 AI 消息时才显示打字动画
@@ -78,6 +78,4 @@ const ChatCard: React.FC<ChatCardProps> = ({ messages, isTyping, messagesEndRef,
         </div>
     </div>
   );
-};
-
-export default ChatCard;
+}
